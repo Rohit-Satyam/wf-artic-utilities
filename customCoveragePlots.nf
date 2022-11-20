@@ -16,7 +16,7 @@ log.info """
 nextCov@KAUST Step 7: BAM Coverage
 =============================================
 Usage:
-	nextflow run 07_coverage.nf --bams ${params.bams} --fqpassDir ${params.fqpassDir} --fasta ${params.fasta} --outdir ${params.outdir} --prefix ${params.prefix}
+	nextflow run customCoveragePlots.nf --bams ${params.bams} --fqpassDir ${params.fqpassDir} --fasta ${params.fasta} --outdir ${params.outdir} --prefix ${params.prefix}
 Input:
 	* --bams: Path of .bam files from computing per-base coverage. Defult [${params.bams}]
 	* --fqpassDir: Path of fastq_pass directory. Default [${params.fqpassDir}]
