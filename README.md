@@ -85,8 +85,12 @@ This script enables users to filter low quality variants, if any, from the VCF f
 
 This script is completely experimental and the tool `VAFATOR` seems to miss `28881–28883: GGG > AAC` causing reversion-mutation in assemblies which are heavily penalised by `nextclade` while assigning QC Score.
 
+The output of this script is indexed, softfiltered VCF file with revised assembly.
+
 ```bash
 nextflow run reviseAssembly.nf --help
+
+nextflow run reviseAssembly.nf --vcf "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.pass.named.vcf.gz" --bam "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.primertrimmed.rg.sorted.bam"
 ```
 
 
