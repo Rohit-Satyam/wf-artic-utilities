@@ -79,5 +79,8 @@ It also calculates coverage internally, and filters sample table and produce cov
 
 ![Per-base horizontal Coverage Plot](examples/images/KFSHRC_3rd_Batch_fastq_files_horizontalcov001.png)
 
+## reviseAssembly.nf
+
+This script enables users to filter low quality variants, if any, from the VCF file and use the filtered VCF file to generate new consensus assembly. For filtering the 
 
 
