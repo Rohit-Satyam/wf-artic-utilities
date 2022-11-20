@@ -7,6 +7,7 @@ params.output = "results/new_assembly"
 params.gtf = "$projectDir/resources/Sars_cov_2.ASM985889v3.101.gff3"
 params.homopolymer = "$projectDir/resources/homopolymer.csv"
 params.help = false
+params.skipHomopolymerMasking = true
 
 // Help Section
 
@@ -25,8 +26,9 @@ Input:
 	* --reference: Path to reference fasta. Default [${params.reference}]
 	* --cov: Depth of Coverage Cutoff. Default[${params.cov}X]
 	* --output: Path for dumping results. Default[${params.output}]
-  * --gtf: Path to GTF/GFF file. Default[${params.gtf}]
-  * --homopolymer: Path to Homopolymer regions (>=4bp) BED file. Default[${params.homopolymer}]
+  	* --gtf: Path to GTF/GFF file. Default[${params.gtf}]
+  	* --homopolymer: Path to Homopolymer regions (>=4bp) BED file. Default[${params.homopolymer}]
+	* --skipHomopolymerMasking: If true, variants falling within homopolymer regions will not be filtered. Default [${params.skipHomopolymerMasking}]
 """
 
 exit 0
@@ -45,6 +47,39 @@ path("*.fasta")
 path("${sid}.vaf.annot.vcf*")
 
 script:
+if ("${params.skipHomopolymerMasking}")
+"""
+## Calculating the Variant Allele Frequency (VAF)
+  vafator --input-vcf  ${vcf.toRealPath()} --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
+
+## Filtering the Variants from Homopolymer regions (regions with repeates longer than 3bp)
+  bgzip -c ${sid}.vaf.vcf > ${sid}.vaf.vcf.gz
+  tabix -p vcf ${sid}.vaf.vcf.gz
+
+## Bad variant calls Tagging
+  bcftools view -Ob ${sid}.vaf.vcf  | \
+  bcftools filter --exclude 'INFO/vafator_af < 0.5 && INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
+  --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
+
+  bgzip -c  ${sid}.vaf.annot.vcf >  ${sid}.vaf.annot.vcf.gz
+  tabix -p vcf ${sid}.vaf.annot.vcf.gz
+
+## Finding the regions of low coverage
+  covtobed -x ${params.cov} ${bam.toRealPath()}  > ${sid}_lowcoverage.bed
+
+## Building the Assembly, masking low coverage regions
+  bcftools consensus -f ${params.reference}  --include 'FILTER="PASS"' -m ${sid}_lowcoverage.bed --output ${sid}.fasta ${sid}.vaf.annot.vcf.gz
+
+## Rename Header
+	seqtk seq -C ${sid}.fasta > ${sid}.temp
+
+## For some reason seqtk append 1 to fasta header
+	seqtk rename ${sid}.temp "${sid} MN908947.3" |seqkit replace -p ".+" -r "${sid} MN908947.3"> ${sid}.fasta
+	rm ${sid}.temp
+
+"""
+else
+
 """
 ## Calculating the Variant Allele Frequency (VAF)
   vafator --input-vcf  ${vcf.toRealPath()} --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
