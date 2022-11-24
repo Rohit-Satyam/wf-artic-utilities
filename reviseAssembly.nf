@@ -56,8 +56,14 @@ if ("${params.skipHomopolymerMasking}")
   bgzip -c ${sid}.vaf.vcf > ${sid}.vaf.vcf.gz
   tabix -p vcf ${sid}.vaf.vcf.gz
 
+## Decompose MNVs
+
+bcftools sort ${sid}.vaf.vcf.gz |  bcftools norm \
+--multiallelics -any --check-ref e --fasta-ref ${params.reference} --old-rec-tag OLD_CLUMPED --atomize - | \
+bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.gatk.vcf.gz -
+
 ## Bad variant calls Tagging
-  bcftools view -Ob ${sid}.vaf.vcf  | \
+  bcftools view -Ob ${sid}.normalized.gatk.vcf.gz  | \
   bcftools filter --exclude 'INFO/vafator_af < 0.5 && INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
   --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
 
