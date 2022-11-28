@@ -49,21 +49,22 @@ path("${sid}.vaf.annot.vcf*")
 script:
 if ("${params.skipHomopolymerMasking}")
 """
+
+## Decompose MNVs
+
+bcftools sort ${vcf.toRealPath()} |  bcftools norm \
+--multiallelics -any --check-ref e --fasta-ref ${params.reference} --old-rec-tag OLD_CLUMPED --atomize - | \
+bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
+
 ## Calculating the Variant Allele Frequency (VAF)
-  vafator --input-vcf  ${vcf.toRealPath()} --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
+  vafator --input-vcf ${sid}.normalized.vcf.gz --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
 
 ## Filtering the Variants from Homopolymer regions (regions with repeates longer than 3bp)
   bgzip -c ${sid}.vaf.vcf > ${sid}.vaf.vcf.gz
   tabix -p vcf ${sid}.vaf.vcf.gz
 
-## Decompose MNVs
-
-bcftools sort ${sid}.vaf.vcf.gz |  bcftools norm \
---multiallelics -any --check-ref e --fasta-ref ${params.reference} --old-rec-tag OLD_CLUMPED --atomize - | \
-bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.gatk.vcf.gz -
-
 ## Bad variant calls Tagging
-  bcftools view -Ob ${sid}.normalized.gatk.vcf.gz  | \
+  bcftools view -Ob ${sid}.vaf.vcf.gz  | \
   bcftools filter --exclude 'INFO/vafator_af < 0.5 && INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
   --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
 
@@ -87,8 +88,12 @@ bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.gatk.vcf.gz -
 else
 
 """
+bcftools sort ${vcf.toRealPath()} |  bcftools norm \
+--multiallelics -any --check-ref e --fasta-ref ${params.reference} --old-rec-tag OLD_CLUMPED --atomize - | \
+bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
+
 ## Calculating the Variant Allele Frequency (VAF)
-  vafator --input-vcf  ${vcf.toRealPath()} --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
+  vafator --input-vcf ${sid}.normalized.vcf.gz --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
 
 ## Filtering the Variants from Homopolymer regions (regions with repeates longer than 3bp)
   bgzip -c ${sid}.vaf.vcf > ${sid}.vaf.vcf.gz
