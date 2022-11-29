@@ -83,7 +83,12 @@ It also calculates coverage internally, and filters sample table and produce cov
 
 This script enables users to filter low quality variants, if any, from the VCF file and use the filtered VCF file to generate new consensus assembly. Any variant with Variant Allele Fraction (VAF) lower than 0.5, DP < 100 and ADP < 50 is tagged as `POOR_CALLS` and is filtered using [VAFATOR](https://github.com/tron-bioinformatics/vafator). We also provide `skipHomopolymerMasking` option that enables you to skip filtering variants present in homopolymer regions (Default: Such filtering is discouraged as of now but has been made available due to best practices mentioned in [connor et al 2022](https://pubmed.ncbi.nlm.nih.gov/36380755/). Besides it was observed to influence Clade assignment as being discussed [here](https://github.com/ncbi/ACTIVTRACEvariants/issues/3)).
 
-This script is completely experimental and the tool `VAFATOR` seems to miss `28881–28883: GGG > AAC` causing reversion-mutation in assemblies which are heavily penalised by `nextclade` while assigning QC Score.
+~This script is completely experimental and the tool `VAFATOR` seems to miss `28881–28883: GGG > AAC` causing reversion-mutation in assemblies which are heavily penalised by `nextclade` while assigning QC Score.~
+
+`Update: 29-Nov-2022`
+
+> The issue of missing MNV has been resolved by their atomization before calculating VAF.
+
 
 The output of this script is indexed, softfiltered VCF file with revised assembly.
 
@@ -93,4 +98,7 @@ nextflow run reviseAssembly.nf --help
 nextflow run reviseAssembly.nf --vcf "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.pass.named.vcf.gz" --bam "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.primertrimmed.rg.sorted.bam"
 ```
 
+### To Do's
+
+- Phasing variants is pending. 
 
