@@ -98,6 +98,14 @@ nextflow run reviseAssembly.nf --help
 nextflow run reviseAssembly.nf --vcf "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.pass.named.vcf.gz" --bam "KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults/*.primertrimmed.rg.sorted.bam"
 ```
 
+## reviseGisaid.nf
+
+This script enables users to revise assemblies after manually filtering the vcfs. Sometime, some variants are send for review by GISAID that require validation. If you choose to remove those variants after reviewing their status as poor variant calls use this script. 
+
+
+```
+nextflow run reviseGisaid.nf --vcf "../GISAID_revision.v.2/*.vaf.annot.vcf.gz" --bam "../GISAID_revision.v.2/*.primertrimmed.rg.sorted.bam" --output ../GISAID_revision.v.2/GISAID_revised_fasta
+```
 ### To Do's
 
 - Phasing variants is pending. 
