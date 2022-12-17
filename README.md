@@ -110,3 +110,17 @@ nextflow run reviseGisaid.nf --vcf "../GISAID_revision.v.2/*.vaf.annot.vcf.gz" -
 
 - Phasing variants is pending. 
 
+## R code to sanitize headers of assemblies
+
+```R
+library(seqinr)
+f <- read.fasta("raw.v.1/all_138.fasta", whole.header = T,forceDNAtolower = F)
+t <- read.csv("Dana_139_samples_metadata.v4.csv")
+t$GISAID.UID <- paste0("hCoV-19/Saudi/KAUST",432:(432+nrow(t)-1),"/",t$Year)
+t$map <- ifelse(t$Folder== "Dana_Data_1", paste(t$Seq.Name,"MN908947.3"), paste(t$Barcode,"MN908947.3"))
+df <- t[match(names(f), t$map),]
+names(f) <- df$GISAID.UID
+is.na(names(f))
+write.fasta(f,names(f),file.out = "all_138_revised.fasta")
+
+```
