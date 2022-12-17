@@ -65,7 +65,7 @@ bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
 
 ## Bad variant calls Tagging
   bcftools view -Ob ${sid}.vaf.vcf.gz  | \
-  bcftools filter --exclude 'INFO/vafator_af < 0.5 && INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
+  bcftools filter --exclude 'INFO/vafator_af < 0.5 || INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
   --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
 
   bgzip -c  ${sid}.vaf.annot.vcf >  ${sid}.vaf.annot.vcf.gz
