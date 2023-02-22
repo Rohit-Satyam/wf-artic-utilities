@@ -58,8 +58,6 @@ bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
 
 ## Calculating the Variant Allele Frequency (VAF)
   vafator --input-vcf ${sid}.normalized.vcf.gz --output-vcf ${sid}.vaf.vcf --bam vafator ${bam.toRealPath()} --mapping-quality 0 --base-call-quality 0
-
-## Filtering the Variants from Homopolymer regions (regions with repeates longer than 3bp)
   bgzip -c ${sid}.vaf.vcf > ${sid}.vaf.vcf.gz
   tabix -p vcf ${sid}.vaf.vcf.gz
 
