@@ -8,7 +8,7 @@ params.gtf = "$projectDir/resources/Sars_cov_2.ASM985889v3.101.gff3"
 params.homopolymer = "$projectDir/resources/homopolymer.csv"
 params.help = false
 params.skipHomopolymerMasking = true
-
+params.filtExp='"INFO/vafator_af < 0.5 || INFO/vafator_dp < 100 || INFO/vafator_ac < 50"'
 // Help Section
 
 if( params.help ) {
@@ -29,6 +29,7 @@ Input:
   	* --gtf: Path to GTF/GFF file. Default[${params.gtf}]
   	* --homopolymer: Path to Homopolymer regions (>=4bp) BED file. Default[${params.homopolymer}]
 	* --skipHomopolymerMasking: If true, variants falling within homopolymer regions will not be filtered. Default [${params.skipHomopolymerMasking}]
+	* --filtExp: Expression to filter Poor Variant Calls.  Default[${params.filtExp}]
 """
 
 exit 0
@@ -63,7 +64,7 @@ bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
 
 ## Bad variant calls Tagging
   bcftools view -Ob ${sid}.vaf.vcf.gz  | \
-  bcftools filter --exclude 'INFO/vafator_af < 0.5 || INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
+  bcftools filter --exclude ${params.filtExp} \
   --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
 
   bgzip -c  ${sid}.vaf.annot.vcf >  ${sid}.vaf.annot.vcf.gz
@@ -100,7 +101,7 @@ bcftools norm --rm-dup exact --output-type z -o ${sid}.normalized.vcf.gz -
 
 ## Bad variant calls Tagging
   bcftools view -Ob ${sid}.vaf.sanatized.vcf  | \
-  bcftools filter --exclude 'INFO/vafator_af < 0.5 || INFO/vafator_dp < 100 && INFO/vafator_ac < 50 ' \
+  bcftools filter --exclude ${params.filtExp} \
   --soft-filter POOR_CALLS --output-type v - | bcftools norm -d both - > ${sid}.vaf.annot.vcf
 
   bgzip -c  ${sid}.vaf.annot.vcf >  ${sid}.vaf.annot.vcf.gz
