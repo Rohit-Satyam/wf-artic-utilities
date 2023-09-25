@@ -60,7 +60,7 @@ The Coverage plot is inspired from `Location of Ns in Final Consensus` section o
 ```bash
 ## Running the wf-artic workflow to produce results first
 
-nextflow run epi2me-labs/wf-artic --fastq /home/subudhak/Documents/COVID_Project/KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/fastq_pass/ --out_dir /home/subudhak/Documents/COVID_Project/KFSHRC_ALL_ONT_SAMPLES/KFSHRC_3rd_Batch_fastq_files/wf-articresults --scheme_version ARTIC/V4.1 --medaka_model r941_min_fast_variant_g507 --pangolin_version 4.1.2 --update_data true --report_detailed true -profile singularity
+nextflow run epi2me-labs/wf-artic --fastq fastq_pass/ --out_dir wf-articresults --scheme_version ARTIC/V4.1 --medaka_model r941_min_fast_variant_g507 --pangolin_version latest --update_data true --report_detailed true -profile singularity
 
 ```
 Now running our `customCoveragePlots.nf` script
