@@ -9,7 +9,7 @@ This repository contain necessary code to make custom coverage plots (`customCov
 conda install -c conda-forge mamba -n base
 
 ## Install dependencies now to run the scripts in this directory
-mamba create -n wf-artic-utilities -c conda-forge -c bioconda -c epi2melabs \
+mamba create -n wf-artic-utilities -c conda-forge -c bioconda -c epi2melabs -c nanoporetech fastcat
 bcftools \
 biopython \
 covtobed  \
